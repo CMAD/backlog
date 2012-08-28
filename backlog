@@ -70,7 +70,7 @@ shift
 
 # if there are more than two arguments, all text is appended to 
 # the file in $NOTES/$topic, plus a date
-echo "$@ ($(date), by $(whoami))" >>"$NOTES/$topic"
+echo "$* ($(date), by $(whoami))" >>"$NOTES/$topic"
 
 # if this is a repo, make a new commit
 if [ -e .git ]; then
