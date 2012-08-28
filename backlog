@@ -16,7 +16,7 @@
 
 # notes are stored in ~/.rn unless overrided by the environment
 
-VERSION="0.1_proof_of_concept"
+VERSION="0.2_proof_of_concept"
 
 NOTES=${NOTES-~/.backlog/}
 
