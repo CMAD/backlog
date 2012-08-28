@@ -1,0 +1,79 @@
+#!/bin/bash
+
+# Copyright (C) 2012 netlabs: www.netlabs.com.uy
+# This program is free software: you can redistribute it and/or modify
+# it under the terms of the GNU General Public License as published by
+# the Free Software Foundation, either version 3 of the License, or
+# (at your option) any later version.
+#
+# This program is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# GNU General Public License for more details.
+#
+# You should have received a copy of the GNU General Public License
+# along with this program.  If not, see <http://www.gnu.org/licenses/>.
+
+# notes are stored in ~/.rn unless overrided by the environment
+
+VERSION="0.1_proof_of_concept"
+
+NOTES=${NOTES-~/.backlog/}
+
+die(){
+  echo "$@"
+  exit 1
+}
+
+if [ ! -z "$1" ] && [ "$1" = "-h" ] || [ ! -e "$NOTES" ]; then
+  cat <<EOF
+usage: backlog [topic] [message]
+
+backlog stores one line comments together with date and username
+in a textfile on the name of topic. If git is installed, the backlog
+directory is also a repo, and updates are commitd to it.
+
+no arguments: shows the list of topics.
+one argument, topic: show the contents of topic
+more than one argument: updates topic
+
+have fun.
+EOF
+fi
+
+# make sure the storage allways exists
+mkdir -p "$NOTES" 2>/dev/null
+cd "$NOTES" || die "Can't enter "$NOTES", somethig nasty happened"
+
+# creat a repo if we have git and $NOTES is not a repo
+if which git 2>&1 >/dev/null && [ ! -e .git ]; then
+  git init >/dev/null
+fi
+
+# if there are no arguments, show all notes
+if [ $# -lt 1 ]; then
+  find -type f | sed "s@^\./@@;/^\./d"
+  exit
+fi
+
+# when there are arguments, the first is the name of the note 
+topic="$1"
+
+# if there is exactly one argument, print the note with that name
+if [ "$#" -eq 1 ]; then
+  cat "$topic" 2>/dev/null
+  exit
+fi
+
+# strip $topic from $@
+shift
+
+# if there are more than two arguments, all text is appended to 
+# the file in $NOTES/$topic, plus a date
+echo "$@ ($(date), by $(whoami))" >>"$NOTES/$topic"
+
+# if this is a repo, make a new commit
+if [ -e .git ]; then
+  git add "$topic"
+  git commit -m "$topic updated: $*"
+fi

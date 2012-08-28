@@ -1,0 +1,13 @@
+usage: backlog [topic] [message]
+
+backlog stores one line comments together with date and username
+in a textfile on the name of topic. If git is installed, the backlog
+directory is also a repo, and updates are commitd to it.
+
+no arguments: shows the list of topics.
+one argument, topic: show the contents of topic
+more than one argument: updates topic
+
+have fun.
+
+pd: this is of proof_of_concept status
